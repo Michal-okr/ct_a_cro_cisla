@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Poplatky ČT a ČRo v číslech</title>
+<meta name="description" content="Přehled čísel a argumentů ke zrušení televizních a rozhlasových poplatků (sněmovní tisk 231, 2026): inflace, mzdy, důchody, hospodaření ČT.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f6f5f1; --surface:#fcfcfb; --surface-2:#efeee9; --border:#dddcd5;
+  --text:#0b0b0b; --text-2:#52514e; --muted:#7a7974;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --accent:#2a78d6;
+  --good:#1a7f37; --bad:#c2332f; --warn-bg:#fff4dc; --warn-bd:#e5b74a;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#363633;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#8f8e86;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --accent:#5b9cec;
+    --good:#4cc26a; --bad:#ec6a66; --warn-bg:#2e2614; --warn-bd:#8a6a1e;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#363633;
+  --text:#f0efec; --text-2:#c3c2b7; --muted:#8f8e86;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --accent:#5b9cec;
+  --good:#4cc26a; --bad:#ec6a66; --warn-bg:#2e2614; --warn-bd:#8a6a1e;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 "Source Sans 3",system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+header.hero{padding:56px 0 28px}
+.kicker{font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;font-size:13px}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,serif;line-height:1.2;margin:0 0 .5em}
+h1{font-size:clamp(30px,5vw,46px)}
+h2{font-size:clamp(23px,3.4vw,30px);margin-top:0}
+h3{font-size:19px}
+p{margin:0 0 1em}
+.lead{font-size:19px;color:var(--text-2);max-width:760px}
+section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin:0 0 24px}
+.note{background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:10px;padding:14px 18px;margin:18px 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:20px 0 4px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.tile .n{font-family:"Source Serif 4",serif;font-size:32px;font-weight:700;line-height:1.1}
+.tile .d{color:var(--text-2);font-size:14.5px;margin-top:6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:720px){.two{grid-template-columns:1fr} section{padding:20px}}
+.side{border-radius:12px;padding:18px 20px;background:var(--surface-2)}
+.side h3{display:flex;gap:8px;align-items:center}
+.side ul{margin:0;padding-left:20px}
+.side li{margin-bottom:.5em}
+.tw{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:15.5px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-weight:600;color:var(--text-2);font-size:13.5px;text-transform:uppercase;letter-spacing:.03em}
+tr.hl td{background:var(--surface-2);font-weight:600}
+table.cmp td{white-space:normal;text-align:left;min-width:150px}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+.muted{color:var(--muted);font-size:14.5px}
+.chart{width:100%;height:auto;display:block}
+.chart .grid{stroke:var(--border);stroke-width:1}
+.chart .axis{stroke:var(--muted);stroke-width:1}
+.chart .ax{fill:var(--muted);font-size:12px}
+.chart .lbl{fill:var(--text-2);font-size:13.5px}
+.chart .val{fill:var(--text);font-size:13.5px;font-weight:600}
+.chart .ln{fill:none;stroke-width:2.2;stroke-linejoin:round}
+.chart .ln.s1{stroke:var(--s1)} .chart .ln.s2{stroke:var(--s2)}
+.chart .dash{stroke-dasharray:5 5}
+.chart .pt{stroke:var(--surface);stroke-width:2;cursor:pointer}
+.chart .pt.s1{fill:var(--s1)} .chart .pt.s2{fill:var(--s2)}
+.chart .s1f{fill:var(--s1)} .chart .s2f{fill:var(--s2)} .chart .s3f{fill:var(--s3)}
+.chart rect{cursor:pointer}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:14.5px;color:var(--text-2);margin:6px 0 10px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+#tip{position:fixed;pointer-events:none;background:var(--text);color:var(--bg);padding:6px 10px;border-radius:6px;font-size:13.5px;opacity:0;transition:opacity .1s;z-index:9;max-width:280px}
+.calc{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:8px 0 14px}
+.calc input[type=range]{width:220px}
+.calc output{font-weight:700;font-size:20px;min-width:70px}
+a{color:var(--accent)}
+.src li{margin-bottom:.35em;font-size:15px}
+footer{padding:10px 0 50px;color:var(--muted);font-size:14px}
+.player{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:4px 0 16px;color:var(--text-2);font-size:14.5px}
+.player audio{height:36px;width:100%;max-width:420px}
+.toggle{position:absolute;top:14px;right:16px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:14px}
+</style>
+</head>
+<body>
+<button class="toggle" id="themeBtn" type="button" aria-label="Přepnout světlý/tmavý režim">◐ Režim</button>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">Rozhlasové a televizní poplatky · stav k 25. 10. 2026</div>
+  <h1>Konec poplatků za ČT a ČRo: co říkají čísla</h1>
+  <p class="lead">Vláda chce místo poplatků posílat České televizi a Českému rozhlasu peníze ze státního rozpočtu.
+  Koalice říká, že tím vrací financování na úroveň roku 2024. Opozice a obě instituce odpovídají, že úroveň 2024 je ve skutečnosti úroveň roku 2008, protože se poplatek 17 let neměnil.
+  Tahle stránka dává obě tvrzení vedle sebe, přepočítává je inflací, mzdami, minimální mzdou a důchody a srovnává ČT s ČRo.</p>
+
+  <div class='player'><span>🔊 Poslechnout celou stránku</span><audio controls preload='none' src='audio/cela-stranka.mp3'></audio></div>  <div class='player'><span>🔊 Poslechnout jen úvod</span><audio controls preload='none' src='audio/uvod.mp3'></audio></div>  <div class="note"><strong>Pozor na stav projednávání.</strong> V sobotu 24. 10. 2026 ráno (hlasování ve 4:36) Sněmovna zákon <em>nepřijala</em>, jen ho poslala do 2. čtení.
+  Návrhy opozice na zamítnutí a na vrácení vládě podpořilo shodně 81 ze 177 přítomných poslanců (ODS, STAN, Piráti, KDU-ČSL, TOP 09). Garančním výborem je výbor pro média a kulturu.
+  Pak zbývá 2. a 3. čtení, Senát (může zákon vrátit nebo zamítnout) a prezident (může vetovat). Koalice pak může přehlasovat 101 hlasy.<br><strong>Realistický start je až rok 2028.</strong> Vláda chtěla začít 1. 1. 2027. Na to už v říjnu 2026 není čas a rozpočet na rok 2027 s převodem nepočítá. Stránka proto všechny výpočty dělá pro první rok 2028. Ve stejném roce navíc končí výjimka z DPH (viz níže).</div>
+
+  <div class="tiles">
+    <div class="tile"><div class="n">5,74 mld.</div><div class="d">navržený příspěvek pro ČT od roku 2028 (letos plán poplatků 6,73 mld., tj. -14,7 %)</div></div>
+    <div class="tile"><div class="n">2,065 mld.</div><div class="d">navržený příspěvek pro ČRo od roku 2028 (letos poplatky ≈ 2,5 mld., tj. -16,6 %)</div></div>
+    <div class="tile"><div class="n">+71 %</div><div class="d">nárůst cenové hladiny 2008 → 2025 (ČSÚ, průměrné roční míry inflace)</div></div>
+    <div class="tile"><div class="n">55 %</div><div class="d">reálná hodnota navržených 5,74 mld. pro ČT oproti výnosu poplatků v roce 2008 (start 2028, inflace 2 % ročně v letech 2026–2028)</div></div>
+  </div>
+</header>
+
+<section id="start-dph">
+  <h2>Realisticky: start v roce 2028 a konec výjimky z DPH</h2>
+  <div class='player'><span>🔊 Poslechnout sekci</span><audio controls preload='none' src='audio/start-dph.mp3'></audio></div>  <div class="two">
+    <div>
+      <h3>Proč ne 2027</h3>
+      <ul>
+        <li>Po 1. čtení (24. 10.) zbývá výbor (lhůta 60 dnů, zkrátit ji lze nejvýš na 20), 2. čtení, 3. čtení (nejdříve 14 dnů po 2. čtení), Senát (30 dnů) a prezident (15 dnů). Při vetu se znovu hlasuje ve Sněmovně.</li>
+        <li>Senát má opoziční většinu a už v usnesení vyzval vládu, aby od rušení poplatků upustila. Lze tedy čekat vrácení nebo zamítnutí a následné přehlasování.</li>
+        <li>Ministr kultury Klempíř (září 2026): 1. 1. 2027 je „jen obtížně dosažitelný“, v úvahu připadá 1. 7. 2027 nebo 1. 1. 2028.</li>
+        <li>Ministryně financí Schillerová: rozpočet na rok 2027 převod nepočítá, ponechává jen rezervu pro případ účinnosti během roku.</li>
+        <li><strong>V roce 2027 se tedy poplatky (150 + 55 Kč) nejspíš platí dál.</strong> ČT ve svém dlouhodobém plánu počítá s výnosem z poplatků 7 050 mil. Kč (2027) a 7 300 mil. Kč (2028).</li>
+        <li>Valorizace se počítá od roku 2026. Do startu v roce 2028 se tak „nasbírají“ asi 4 procentní body inflace a do 10 bodů zbývá ještě zhruba 3 roky.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Co je výjimka z DPH</h3>
+      <ul>
+        <li>Od roku 2017 umožňuje zákon o DPH České televizi a Českému rozhlasu uplatňovat <strong>odpočet DPH na vstupu ve stejném rozsahu jako komerční stanice</strong>. Týká se to daně z nakoupeného zboží a služeb na výrobu pořadů a provoz.</li>
+        <li>Bez výjimky se vysílání financované poplatkem nebo dotací nebere jako ekonomická činnost. Médium pak DPH z nákupů odečíst nemůže nebo jen částečně a tato daň se pro něj stává nákladem. Před rokem 2017 se kvůli tomu ČT i ČRo soudily s finanční správou.</li>
+        <li>Výjimka byla nejdřív na 4 roky, v roce 2021 se prodloužila do roku 2024 a pak <strong>do 31. 12. 2027</strong>. Vládní návrh (tisk 231) ji neprodlužuje.</li>
+        <li>Výpadek od 1. 1. 2028: <strong>ČT asi 420 mil. Kč ročně, ČRo asi 130 mil. Kč ročně</strong>, dohromady asi 550 mil.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>První rok státního financování (2028): kolik reálně chybí</h3>
+    <div class="tw"><table>
+    <thead><tr><th>Scénář (mil. Kč)</th><th>Poplatky</th><th>Příspěvek</th><th>Rozdíl</th><th>DPH</th><th>Celkem</th><th>% rozp. 2026</th></tr></thead>
+    <tbody>
+          <tr><td>ČT – oproti plánu poplatků 2026</td><td>6 730</td><td>5 740</td><td class="neg">-990</td><td class="neg">−420</td><td class="neg"><strong>-1 410</strong></td><td class="neg">-16,6 %</td></tr>
+          <tr><td>ČT – oproti vlastnímu plánu poplatků 2028</td><td>7 300</td><td>5 740</td><td class="neg">-1 560</td><td class="neg">−420</td><td class="neg"><strong>-1 980</strong></td><td class="neg">-23,3 %</td></tr>
+          <tr><td>ČRo – oproti plánu poplatků 2026</td><td>2 476</td><td>2 065</td><td class="neg">-411</td><td class="neg">−130</td><td class="neg"><strong>-541</strong></td><td class="neg">-19,8 %</td></tr>
+        </tbody>
+  </table></div>
+  <p class="muted">Médiář s ČT a ČRo počítají pokles rozpočtu mezi lety 2026 a 2028 shodně na zhruba 20 %: ČT 1,7 mld. (1,3 mld. příspěvek a 0,42 mld. DPH), ČRo 541 mil. (411 mil. a 130 mil.).
+  Reálně, v cenách roku 2008, bude mít příspěvek v roce 2028 hodnotu jen 55 % (ČT) a 58 % (ČRo) výnosu z poplatků v roce 2008, a to ještě před odečtením DPH.</p>
+
+  <h3>Jak to dopadne na státní rozpočet</h3>
+    <div class="tiles">
+    <div class="tile"><div class="n">7,81 mld.</div><div class="d">nový výdaj státního rozpočtu ročně od 2028 (ČT + ČRo). Dnes ho platí domácnosti a firmy mimo rozpočet.</div></div>
+    <div class="tile"><div class="n">+550 mil.</div><div class="d">o tolik víc DPH státu zůstane, protože ČT a ČRo si ji po konci výjimky nebudou moct odečíst. Pro média je to náklad, pro rozpočet příjem.</div></div>
+    <div class="tile"><div class="n">≈ 7,26 mld.</div><div class="d">čistá zátěž rozpočtu po započtení DPH, plus valorizace o 10 % zhruba každé 4–5 let</div></div>
+    <div class="tile"><div class="n">−275 mil.</div><div class="d">ročně přijde státní Česká pošta o odměnu za výběr poplatků (připomínka ministerstva vnitra)</div></div>
+  </div>
+  <p>Konec výjimky z DPH tedy <strong>zvyšuje náklady médií, ne výdaje státu</strong>. Stát na DPH od ČT a ČRo naopak vybere víc.
+  Kdyby chtěl stát médiím výpadek nahradit, musel by příspěvek zvýšit asi o 550 mil. Ty by se mu ale z velké části vrátily zpátky na DPH. Je to tedy hlavně účetní přesun peněz mezi státem a médii.
+  Pro ČT a ČRo to ale znamená, že od roku 2028 jim souběžně ubudou peníze ze dvou stran: nižší příspěvek a dražší nákupy.
+  Ministerstvo financí navíc v připomínkách upozornilo, že návrh neurčuje, z jaké kapitoly rozpočtu se bude platit.</p>
+</section>
+
+<section id="spor">
+  <h2>„Návrat na rok 2024“, nebo „návrat na rok 2008“?</h2>
+  <div class='player'><span>🔊 Poslechnout sekci</span><audio controls preload='none' src='audio/spor.mp3'></audio></div>  <p>Obě strany mluví o stejném čísle. Výnos ČT z poplatků byl v roce 2024 <strong>5,74 mld. Kč</strong>.
+  V roce 2008 to bylo <strong>5,79 mld. Kč</strong>, tedy prakticky stejně. Vláda navrhuje jako pevnou roční částku (původně od roku 2027, reálně nejdříve od 2028) <strong>5,74 mld. Kč</strong>.
+  Nominálně je to tedy stejná částka jako v roce 2008 i 2024. Reálně je to ale něco jiného.</p>
+  <div class="tw"><table>
+    <thead><tr><th>ČT – peníze z poplatků / příspěvku</th><th>Nominálně</th><th>V cenách roku 2008</th><th>Reálně vs. 2008</th></tr></thead>
+    <tbody>
+          <tr><td>Rok 2008 (skutečnost)</td><td>5 787 mil.</td><td>5 787 mil.</td><td class="">100 %</td></tr>
+          <tr><td>Rok 2024 (skutečnost)</td><td>5 742 mil.</td><td>3 441 mil.</td><td class="neg">-40,5 %</td></tr>
+          <tr><td>Rok 2025 (skutečnost)</td><td>6 338 mil.</td><td>3 706 mil.</td><td class="neg">-36,0 %</td></tr>
+          <tr class="hl"><td>Rok 2028 (návrh vlády)</td><td>5 740 mil.</td><td>3 163 mil.</td><td class="neg">-45,3 %</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">Ceny 2008 jsou přepočtené řetězením průměrných ročních měr inflace ČSÚ. Pro roky 2026–2028 je předpoklad 2,0 % (12měsíční průměr ČSÚ k srpnu 2026).</p>
+
+  <h3>Výnos ČT z poplatků 2008–2025 a návrh 2028 (mld. Kč)</h3>
+  <div class="legend"><span><i style="background:var(--s1)"></i>nominálně</span><span><i style="background:var(--s2)"></i>v cenách roku 2008</span><span>čárkovaně: přechod na návrh 2028</span></div>
+  <svg viewBox='0 0 760 320' class='chart' role='img' aria-labelledby='g1t'><title id='g1t'>Výnos ČT z poplatků 2008–2025 a návrh 2028, nominálně a v cenách roku 2008</title><line x1='46' x2='744' y1='286' y2='286' class='grid'/><text x='40' y='290' class='ax' text-anchor='end'>3,0</text><line x1='46' x2='744' y1='247.4' y2='247.4' class='grid'/><text x='40' y='251.4' class='ax' text-anchor='end'>3,5</text><line x1='46' x2='744' y1='208.9' y2='208.9' class='grid'/><text x='40' y='212.9' class='ax' text-anchor='end'>4,0</text><line x1='46' x2='744' y1='170.3' y2='170.3' class='grid'/><text x='40' y='174.3' class='ax' text-anchor='end'>4,5</text><line x1='46' x2='744' y1='131.7' y2='131.7' class='grid'/><text x='40' y='135.7' class='ax' text-anchor='end'>5,0</text><line x1='46' x2='744' y1='93.1' y2='93.1' class='grid'/><text x='40' y='97.1' class='ax' text-anchor='end'>5,5</text><line x1='46' x2='744' y1='54.6' y2='54.6' class='grid'/><text x='40' y='58.6' class='ax' text-anchor='end'>6,0</text><line x1='46' x2='744' y1='16' y2='16' class='grid'/><text x='40' y='20' class='ax' text-anchor='end'>6,5</text><text x='46' y='310' class='ax' text-anchor='middle'>2008</text><text x='185.6' y='310' class='ax' text-anchor='middle'>2012</text><text x='325.2' y='310' class='ax' text-anchor='middle'>2016</text><text x='464.8' y='310' class='ax' text-anchor='middle'>2020</text><text x='604.4' y='310' class='ax' text-anchor='middle'>2024</text><text x='744' y='310' class='ax' text-anchor='middle'>2028</text><polyline points='46,71 80.9,67.8 115.8,70.6 150.7,72.2 185.6,73.4 220.5,76.4 255.4,79.4 290.3,83.8 325.2,78.5 360.1,80.4 395,82.7 429.9,79.6 464.8,82.1 499.7,77.2 534.6,76.2 569.5,76.1 604.4,74.5 639.3,28.5' class='ln s1'/><line x1='639.3' y1='28.5' x2='744' y2='74.6' class='ln s1 dash'/><circle cx='46' cy='71' r='3' class='pt s1' data-tip='2008 – Nominálně: 5,79 mld. Kč'/><circle cx='80.9' cy='67.8' r='3' class='pt s1' data-tip='2009 – Nominálně: 5,83 mld. Kč'/><circle cx='115.8' cy='70.6' r='3' class='pt s1' data-tip='2010 – Nominálně: 5,79 mld. Kč'/><circle cx='150.7' cy='72.2' r='3' class='pt s1' data-tip='2011 – Nominálně: 5,77 mld. Kč'/><circle cx='185.6' cy='73.4' r='3' class='pt s1' data-tip='2012 – Nominálně: 5,76 mld. Kč'/><circle cx='220.5' cy='76.4' r='3' class='pt s1' data-tip='2013 – Nominálně: 5,72 mld. Kč'/><circle cx='255.4' cy='79.4' r='3' class='pt s1' data-tip='2014 – Nominálně: 5,68 mld. Kč'/><circle cx='290.3' cy='83.8' r='3' class='pt s1' data-tip='2015 – Nominálně: 5,62 mld. Kč'/><circle cx='325.2' cy='78.5' r='3' class='pt s1' data-tip='2016 – Nominálně: 5,69 mld. Kč'/><circle cx='360.1' cy='80.4' r='3' class='pt s1' data-tip='2017 – Nominálně: 5,66 mld. Kč'/><circle cx='395' cy='82.7' r='3' class='pt s1' data-tip='2018 – Nominálně: 5,64 mld. Kč'/><circle cx='429.9' cy='79.6' r='3' class='pt s1' data-tip='2019 – Nominálně: 5,68 mld. Kč'/><circle cx='464.8' cy='82.1' r='3' class='pt s1' data-tip='2020 – Nominálně: 5,64 mld. Kč'/><circle cx='499.7' cy='77.2' r='3' class='pt s1' data-tip='2021 – Nominálně: 5,71 mld. Kč'/><circle cx='534.6' cy='76.2' r='3' class='pt s1' data-tip='2022 – Nominálně: 5,72 mld. Kč'/><circle cx='569.5' cy='76.1' r='3' class='pt s1' data-tip='2023 – Nominálně: 5,72 mld. Kč'/><circle cx='604.4' cy='74.5' r='3' class='pt s1' data-tip='2024 – Nominálně: 5,74 mld. Kč'/><circle cx='639.3' cy='28.5' r='3' class='pt s1' data-tip='2025 – Nominálně: 6,34 mld. Kč'/><circle cx='744' cy='74.6' r='5' class='pt s1' data-tip='2028 – Nominálně: 5,74 mld. Kč (návrh vlády)'/><polyline points='46,71 80.9,72.2 115.8,81.5 150.7,91.2 185.6,105.9 220.5,114.4 255.4,118.7 290.3,123.9 325.2,121.8 360.1,133.2 395,143.1 429.9,150.6 464.8,164.1 499.7,173.1 534.6,217.6 569.5,246.6 604.4,251.9 639.3,231.5' class='ln s2'/><line x1='639.3' y1='231.5' x2='744' y2='273.4' class='ln s2 dash'/><circle cx='46' cy='71' r='3' class='pt s2' data-tip='2008 – V cenách 2008: 5,79 mld. Kč'/><circle cx='80.9' cy='72.2' r='3' class='pt s2' data-tip='2009 – V cenách 2008: 5,77 mld. Kč'/><circle cx='115.8' cy='81.5' r='3' class='pt s2' data-tip='2010 – V cenách 2008: 5,65 mld. Kč'/><circle cx='150.7' cy='91.2' r='3' class='pt s2' data-tip='2011 – V cenách 2008: 5,52 mld. Kč'/><circle cx='185.6' cy='105.9' r='3' class='pt s2' data-tip='2012 – V cenách 2008: 5,33 mld. Kč'/><circle cx='220.5' cy='114.4' r='3' class='pt s2' data-tip='2013 – V cenách 2008: 5,22 mld. Kč'/><circle cx='255.4' cy='118.7' r='3' class='pt s2' data-tip='2014 – V cenách 2008: 5,17 mld. Kč'/><circle cx='290.3' cy='123.9' r='3' class='pt s2' data-tip='2015 – V cenách 2008: 5,10 mld. Kč'/><circle cx='325.2' cy='121.8' r='3' class='pt s2' data-tip='2016 – V cenách 2008: 5,13 mld. Kč'/><circle cx='360.1' cy='133.2' r='3' class='pt s2' data-tip='2017 – V cenách 2008: 4,98 mld. Kč'/><circle cx='395' cy='143.1' r='3' class='pt s2' data-tip='2018 – V cenách 2008: 4,85 mld. Kč'/><circle cx='429.9' cy='150.6' r='3' class='pt s2' data-tip='2019 – V cenách 2008: 4,75 mld. Kč'/><circle cx='464.8' cy='164.1' r='3' class='pt s2' data-tip='2020 – V cenách 2008: 4,58 mld. Kč'/><circle cx='499.7' cy='173.1' r='3' class='pt s2' data-tip='2021 – V cenách 2008: 4,46 mld. Kč'/><circle cx='534.6' cy='217.6' r='3' class='pt s2' data-tip='2022 – V cenách 2008: 3,89 mld. Kč'/><circle cx='569.5' cy='246.6' r='3' class='pt s2' data-tip='2023 – V cenách 2008: 3,51 mld. Kč'/><circle cx='604.4' cy='251.9' r='3' class='pt s2' data-tip='2024 – V cenách 2008: 3,44 mld. Kč'/><circle cx='639.3' cy='231.5' r='3' class='pt s2' data-tip='2025 – V cenách 2008: 3,71 mld. Kč'/><circle cx='744' cy='273.4' r='5' class='pt s2' data-tip='2028 – V cenách 2008: 3,16 mld. Kč (návrh vlády)'/><text x='744' y='98.6' class='lbl' text-anchor='end'>návrh 2028</text></svg></section>
+
+<section id="inflace">
+  <h2>Kolik z poplatku „snědla“ inflace</h2>
+  <div class='player'><span>🔊 Poslechnout sekci</span><audio controls preload='none' src='audio/inflace.mp3'></audio></div>  <div class="two">
+    <div>
+      <h3>Televizní poplatek</h3>
+      <p>135 Kč platilo od 1. 1. 2008 do dubna 2025. Pak se poplatek zvedl na 150 Kč.</p>
+      <ul>
+        <li>Aby měl v roce 2025 stejnou kupní sílu jako v roce 2008, musel by být <strong>231 Kč</strong>.</li>
+        <li>Reálná hodnota 135 Kč klesla do roku 2025 na <strong>79 Kč</strong> v cenách 2008 (-42 %).</li>
+        <li>Zvýšení na 150 Kč (+11 %) z toho vrátilo jen část: 150 Kč odpovídá 88 Kč roku 2008.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Rozhlasový poplatek</h3>
+      <p>45 Kč platilo od 1. 10. 2005 do dubna 2025. Pak se poplatek zvedl na 55 Kč.</p>
+      <ul>
+        <li>Ceny od roku 2005 do roku 2025 vzrostly o <strong>+92 %</strong>.</li>
+        <li>Stejná kupní síla jako v roce 2005 by znamenala <strong>86 Kč</strong>.</li>
+        <li>Kdyby poplatek rostl jako průměrná mzda od roku 2005, byl by <strong>121 Kč</strong>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="prijmy">
+  <h2>Poplatek vs. mzdy, minimální mzda a důchody</h2>
+  <div class='player'><span>🔊 Poslechnout sekci</span><audio controls preload='none' src='audio/prijmy.mp3'></audio></div>  <p>Inflace ukazuje, kolik poplatek ztratil na kupní síle. Druhé měřítko je, jak velkou část příjmu domácnost na poplatek dává. Průměrná mzda, minimální mzda i důchody rostly od roku 2008 mnohem rychleji než ceny i poplatek.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Ukazatel (Kč/měsíc)</th><th>2008</th><th>2025</th><th>Růst</th><th>TV poplatek 135 Kč, kdyby rostl stejně</th></tr></thead>
+    <tbody>
+      <tr><td>Cenová hladina (CPI)</td><td>100</td><td>171,0</td><td>+71,0 %</td><td>231 Kč</td></tr>
+      <tr><td>Průměrná hrubá mzda</td><td>22 592</td><td>49 215</td><td>+117,8 %</td><td>294 Kč</td></tr>
+      <tr><td>Minimální mzda</td><td>8 000</td><td>20 800</td><td>+160,0 %</td><td>351 Kč</td></tr>
+      <tr><td>Průměrný starobní důchod</td><td>9 347</td><td>21 171</td><td>+126,5 %</td><td>306 Kč</td></tr>
+      <tr class="hl"><td>TV poplatek ve skutečnosti</td><td>135</td><td>150</td><td>+11,1 %</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Vývoj poměrů: minimální mzda, průměrná mzda a důchod</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Poměr</th><th>2008</th><th>2025</th><th>Změna</th></tr></thead>
+    <tbody>
+            <tr><td>Minimální mzda / průměrná mzda</td><td>35,4 %</td><td>42,3 %</td><td>+6,9 p. b.</td></tr>
+            <tr><td>Průměrný důchod / průměrná mzda</td><td>41,4 %</td><td>43,0 %</td><td>+1,6 p. b.</td></tr>
+            <tr><td>Mzda v ČT / průměrná mzda v ČR</td><td>145,8 %</td><td>123,4 %</td><td>−22,3 p. b.</td></tr>
+          </tbody>
+  </table></div>
+
+  <h3>Kolik procent příjmu domácnost platí za ČT + ČRo dohromady</h3>
+    <div class="tw"><table>
+    <thead><tr><th>Podíl poplatků (180 Kč v 2008 / 205 Kč od 5/2025) na…</th><th>2008</th><th>2025</th><th>Zátěž klesla na</th></tr></thead>
+    <tbody>
+            <tr><td>průměrné mzdě</td><td>0,80 %</td><td>0,42 %</td><td>52 % původní zátěže</td></tr>
+            <tr><td>minimální mzdě</td><td>2,25 %</td><td>0,99 %</td><td>44 % původní zátěže</td></tr>
+            <tr><td>průměrném důchodu</td><td>1,93 %</td><td>0,97 %</td><td>50 % původní zátěže</td></tr>
+          </tbody>
+  </table></div>
+  <p class="muted">Domácnost tedy i po zvýšení v roce 2025 dává na média veřejné služby zhruba polovinu toho podílu z příjmu co v roce 2008.
+  Po zrušení poplatků domácnost ušetří 2 460 Kč ročně (to je číslo ministra Klempíře). Rozpočet ale zaplatí 7,81 mld. Kč z daní, tedy asi 716 Kč ročně na každého obyvatele, včetně dětí.</p>
+
+  <h3>Růst 2008 → 2025 v procentech</h3>
+  <div class="legend"><span><i style="background:var(--s1)"></i>příjmy obyvatel a ceny</span><span><i style="background:var(--s2)"></i>Česká televize a TV poplatek</span><span><i style="background:var(--s3)"></i>Český rozhlas</span></div>
+  <svg viewBox='0 0 760 454' class='chart' role='img' aria-labelledby='g2t'><title id='g2t'>Růst v procentech mezi lety 2008 a 2025</title><text x='220' y='27' class='lbl' text-anchor='end'>Ceny (inflace CPI)</text><rect x='267.3' y='13' width='176.6' height='20' rx='4' class='s1f' data-tip='Ceny (inflace CPI): +71,0 %'/><text x='449.9' y='27' class='val'>+71 %</text><text x='220' y='61' class='lbl' text-anchor='end'>Průměrná mzda v ČR</text><rect x='267.3' y='47' width='293' height='20' rx='4' class='s1f' data-tip='Průměrná mzda v ČR: +117,8 %'/><text x='566.3' y='61' class='val'>+118 %</text><text x='220' y='95' class='lbl' text-anchor='end'>Minimální mzda</text><rect x='267.3' y='81' width='397.8' height='20' rx='4' class='s1f' data-tip='Minimální mzda: +160,0 %'/><text x='671.1' y='95' class='val'>+160 %</text><text x='220' y='129' class='lbl' text-anchor='end'>Průměrný starobní důchod</text><rect x='267.3' y='115' width='314.5' height='20' rx='4' class='s1f' data-tip='Průměrný starobní důchod: +126,5 %'/><text x='587.8' y='129' class='val'>+127 %</text><text x='220' y='163' class='lbl' text-anchor='end'>Průměrná mzda v ČT</text><rect x='267.3' y='149' width='210' height='20' rx='4' class='s2f' data-tip='Průměrná mzda v ČT: +84,4 %'/><text x='483.3' y='163' class='val'>+84 %</text><text x='220' y='197' class='lbl' text-anchor='end'>Celkové výnosy ČT</text><rect x='267.3' y='183' width='25.7' height='20' rx='4' class='s2f' data-tip='Celkové výnosy ČT: +10,3 %'/><text x='299' y='197' class='val'>+10 %</text><text x='220' y='231' class='lbl' text-anchor='end'>TV poplatek (135 → 150 Kč)</text><rect x='267.3' y='217' width='27.6' height='20' rx='4' class='s2f' data-tip='TV poplatek (135 → 150 Kč): +11,1 %'/><text x='300.9' y='231' class='val'>+11 %</text><text x='220' y='265' class='lbl' text-anchor='end'>Výnos z TV poplatků ČT</text><rect x='267.3' y='251' width='23.7' height='20' rx='4' class='s2f' data-tip='Výnos z TV poplatků ČT: +9,5 %'/><text x='297' y='265' class='val'>+10 %</text><text x='220' y='299' class='lbl' text-anchor='end'>Počet zaměstnanců ČT</text><rect x='267' y='285' width='2' height='20' rx='4' class='s2f' data-tip='Počet zaměstnanců ČT: -0,1 %'/><text x='273.3' y='299' class='val'>0 %</text><text x='220' y='333' class='lbl' text-anchor='end'>Průměrná mzda v ČRo</text><rect x='267.3' y='319' width='147.2' height='20' rx='4' class='s3f' data-tip='Průměrná mzda v ČRo: +59,2 %'/><text x='420.5' y='333' class='val'>+59 %</text><text x='220' y='367' class='lbl' text-anchor='end'>Celkové výnosy ČRo</text><rect x='267.3' y='353' width='37.8' height='20' rx='4' class='s3f' data-tip='Celkové výnosy ČRo: +15,2 %'/><text x='311.1' y='367' class='val'>+15 %</text><text x='220' y='401' class='lbl' text-anchor='end'>Výnos z rozhl. poplatků ČRo</text><rect x='267.3' y='387' width='45.9' height='20' rx='4' class='s3f' data-tip='Výnos z rozhl. poplatků ČRo: +18,5 %'/><text x='319.2' y='401' class='val'>+18 %</text><text x='220' y='435' class='lbl' text-anchor='end'>Počet zaměstnanců ČRo</text><rect x='248.5' y='421' width='18.8' height='20' rx='4' class='s3f' data-tip='Počet zaměstnanců ČRo: -7,6 %'/><text x='273.3' y='435' class='val'>-8 %</text><line x1='267.3' x2='267.3' y1='0' y2='454' class='axis'/></svg></section>
+
+<section id="kdo-plati">
+  <h2>Kdo platí dnes a kdo bude platit po změně</h2>
+  <div class='player'><span>🔊 Poslechnout sekci</span><audio controls preload='none' src='audio/kdo-plati.mp3'></audio></div>  <div class="two">
+    <div class="side">
+      <h3>Dnes: poplatek (150 + 55 Kč měsíčně)</h3>
+      <ul>
+        <li><strong>Domácnosti</strong> platí jednou za domácnost, pokud mají jakékoli zařízení schopné příjmu. Od května 2025 se počítá i mobil, počítač nebo tablet s internetem.</li>
+        <li><strong>Nemusí platit:</strong>
+          <ul>
+            <li>domácnosti s čistým příjmem do 2,15násobku životního minima (od 1. 10. 2026 je to 11 825 Kč pro jednotlivce a asi 18 813 Kč pro dvojici). Je potřeba o to požádat a každého půl roku to obnovit.</li>
+            <li>lidé s těžkým postižením zraku nebo sluchu a jejich domácnosti</li>
+            <li>klienti domovů pro seniory a podobných zařízení bez vlastního přijímače</li>
+            <li>cizinci bez trvalého nebo dlouhodobého pobytu</li>
+            <li>domácnosti bez jakéhokoli přijímače</li>
+          </ul>
+        </li>
+        <li><strong>Firmy a OSVČ</strong> do května 2025 platily za <em>každý</em> přijímač, tedy i za každé autorádio ve služebním autě. Od července 2025 platí násobek poplatku podle počtu zaměstnanců (tabulka vpravo) a navíc za každé pronajímané vozidlo s přijímačem.</li>
+        <li>Poslanecký tisk 201 (koalice) chce osvobodit ještě lidi nad 75 let, nezaopatřené děti, držitele průkazů TP/ZTP a firmy do 50 zaměstnanců.</li>
+      </ul>
+    </div>
+    <div class="side">
+      <h3>Firmy: měsíční platba podle zaměstnanců</h3>
+      <div class="tw"><table>
+        <thead><tr><th>Zaměstnanců</th><th>Násobek</th><th>Kč/měsíc</th><th>Kč/rok</th></tr></thead>
+        <tbody>
+                  <tr><td>méně než 25</td><td>—</td><td>neplatí</td><td>—</td></tr>
+                  <tr><td>25–49</td><td>5</td><td>1 025</td><td>12 300</td></tr>
+                  <tr><td>50–99</td><td>10</td><td>2 050</td><td>24 600</td></tr>
+                  <tr><td>100–199</td><td>20</td><td>4 100</td><td>49 200</td></tr>
+                  <tr><td>200–249</td><td>30</td><td>6 150</td><td>73 800</td></tr>
+                  <tr><td>250–499</td><td>70</td><td>14 350</td><td>172 200</td></tr>
+                  <tr><td>500 a více</td><td>100</td><td>20 500</td><td>246 000</td></tr>
+                </tbody>
+      </table></div>
+      <p class="muted">Násobek se počítá z obou poplatků dohromady (205 Kč). Firmy pod 25 zaměstnanců neplatí, ale musí se registrovat.</p>
+    </div>
+  </div>
+  <h3>Po změně: platí všichni přes daně</h3>
+  <p>Příspěvek 7,81 mld. Kč ročně půjde ze státního rozpočtu, tedy ze <strong>všech daní dohromady</strong> (DPH, spotřební daně, daně z příjmů a další).
+  Žádné výjimky ani „neplátci“ už nebudou. Na ČT a ČRo přispěje každý, kdo platí daně, včetně těch, kdo dnes osvobození jsou: nízkopříjmové domácnosti, senioři v pobytových zařízeních, lidé bez televize i rádia, malé firmy.
+  Nejvíc se to dotkne lidí s nízkými příjmy, protože DPH a spotřební daně platí z každého nákupu.</p>
+  <p>Rozdíl je i v tom, <em>jak</em> se platí. Poplatek je pevná částka za domácnost bez ohledu na příjem (kromě výjimky pro nejchudší). Daně platí každý podle toho, kolik vydělá a utratí.
+  Průměrně to vychází na asi 716 Kč ročně na každého obyvatele včetně dětí. Domácnost s vyššími příjmy a spotřebou zaplatí víc než dnešních 2 460 Kč, nízkopříjmová méně, ale už ne nulu.</p>
+</section>
+
+<section id="hospodareni">
+  <h2>Hospodaření České televize 2008–2025</h2>
+  <div class='player'><span>🔊 Poslechnout sekci</span><audio controls preload='none' src='audio/hospodareni.mp3'></audio></div>  <p>Data jsou z přehledu „Vybrané ukazatele hospodaření“, který ČT zveřejňuje. Počet zaměstnanců je dnes stejný jako v roce 2008. Průměrná mzda v ČT rostla pomaleji než průměrná mzda v celé ČR.
+  Výnosy celkem rostly hlavně díky komerčním a ostatním příjmům a v roce 2025 díky vyššímu poplatku.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Rok</th><th>Výnosy celkem (mil.)</th><th>z toho poplatky (mil.)</th><th>Poplatky v cenách 2008</th><th>Zaměstnanci</th><th>Prům. mzda ČT</th><th>Výnosy na zaměstnance v cenách 2008</th></tr></thead>
+    <tbody>
+          <tr class="hl">
+        <td>2008</td><td>6 760</td><td>5 787</td><td>5 787</td>
+        <td>2 881</td><td>32 934 Kč</td><td>2 346 tis.</td>
+      </tr>
+          <tr>
+        <td>2009</td><td>6 926</td><td>5 829</td><td>5 771</td>
+        <td>2 896</td><td>35 239 Kč</td><td>2 368 tis.</td>
+      </tr>
+          <tr>
+        <td>2010</td><td>6 887</td><td>5 792</td><td>5 650</td>
+        <td>2 825</td><td>36 403 Kč</td><td>2 378 tis.</td>
+      </tr>
+          <tr>
+        <td>2011</td><td>6 665</td><td>5 771</td><td>5 525</td>
+        <td>2 798</td><td>36 124 Kč</td><td>2 281 tis.</td>
+      </tr>
+          <tr>
+        <td>2012</td><td>6 636</td><td>5 756</td><td>5 334</td>
+        <td>2 856</td><td>36 797 Kč</td><td>2 153 tis.</td>
+      </tr>
+          <tr>
+        <td>2013</td><td>6 788</td><td>5 717</td><td>5 225</td>
+        <td>2 926</td><td>37 173 Kč</td><td>2 121 tis.</td>
+      </tr>
+          <tr>
+        <td>2014</td><td>6 933</td><td>5 678</td><td>5 168</td>
+        <td>2 903</td><td>37 829 Kč</td><td>2 174 tis.</td>
+      </tr>
+          <tr>
+        <td>2015</td><td>6 852</td><td>5 621</td><td>5 101</td>
+        <td>2 906</td><td>38 325 Kč</td><td>2 140 tis.</td>
+      </tr>
+          <tr>
+        <td>2016</td><td>6 831</td><td>5 690</td><td>5 128</td>
+        <td>2 913</td><td>38 669 Kč</td><td>2 113 tis.</td>
+      </tr>
+          <tr>
+        <td>2017</td><td>6 458</td><td>5 665</td><td>4 981</td>
+        <td>2 921</td><td>39 620 Kč</td><td>1 944 tis.</td>
+      </tr>
+          <tr>
+        <td>2018</td><td>6 553</td><td>5 635</td><td>4 853</td>
+        <td>2 929</td><td>42 284 Kč</td><td>1 927 tis.</td>
+      </tr>
+          <tr>
+        <td>2019</td><td>6 469</td><td>5 676</td><td>4 755</td>
+        <td>2 946</td><td>43 693 Kč</td><td>1 840 tis.</td>
+      </tr>
+          <tr>
+        <td>2020</td><td>6 184</td><td>5 643</td><td>4 581</td>
+        <td>2 971</td><td>44 735 Kč</td><td>1 690 tis.</td>
+      </tr>
+          <tr>
+        <td>2021</td><td>6 683</td><td>5 707</td><td>4 463</td>
+        <td>2 992</td><td>46 239 Kč</td><td>1 747 tis.</td>
+      </tr>
+          <tr>
+        <td>2022</td><td>7 175</td><td>5 720</td><td>3 886</td>
+        <td>2 956</td><td>49 219 Kč</td><td>1 649 tis.</td>
+      </tr>
+          <tr>
+        <td>2023</td><td>7 208</td><td>5 721</td><td>3 511</td>
+        <td>2 934</td><td>55 254 Kč</td><td>1 508 tis.</td>
+      </tr>
+          <tr class="hl">
+        <td>2024</td><td>7 543</td><td>5 742</td><td>3 441</td>
+        <td>2 972</td><td>57 796 Kč</td><td>1 521 tis.</td>
+      </tr>
+          <tr class="hl">
+        <td>2025</td><td>7 458</td><td>6 338</td><td>3 706</td>
+        <td>2 878</td><td>60 745 Kč</td><td>1 515 tis.</td>
+      </tr>
+        </tbody>
+  </table></div>
+  <div class="tiles">
+    <div class="tile"><div class="n">-0,1 %</div><div class="d">změna počtu zaměstnanců ČT 2008 → 2025 (2 881 → 2 878)</div></div>
+    <div class="tile"><div class="n">+84 %</div><div class="d">růst průměrné mzdy v ČT (v ČR celkem +118 %)</div></div>
+    <div class="tile"><div class="n">-35 %</div><div class="d">reálná změna celkových výnosů ČT 2008 → 2025</div></div>
+    <div class="tile"><div class="n">≈ 1,8 mld.</div><div class="d">hotovost ČT na účtech na konci roku 2025 (Lupa.cz). Vláda tvrdí, že rezervy stačí. Rada ČT to odmítá.</div></div>
+  </div>
+</section>
+
+<section id="rozhlas">
+  <h2>Hospodaření Českého rozhlasu 2008–2025</h2>
+  <div class='player'><span>🔊 Poslechnout sekci</span><audio controls preload='none' src='audio/rozhlas.mp3'></audio></div>  <p>Data jsou z výročních zpráv o hospodaření ČRo (skutečnost, předkládané Sněmovně). Rozhlasový poplatek byl 45 Kč od roku 2005 do dubna 2025, tedy ještě o tři roky déle bez změny než televizní.
+  Výnos z poplatků se v letech 2008–2024 pohyboval kolem 2 mld. Kč. ČRo mezitím snížil počet zaměstnanců o 7 %.
+  Navržených 2,065 mld. je přesně výnos z poplatků v roce 2024 (2,066 mld.).</p>
+
+  <div class="tiles">
+    <div class="tile"><div class="n">58 %</div><div class="d">reálná hodnota navržených 2,065 mld. oproti výnosu z poplatků v roce 2008 (1,95 mld.)</div></div>
+    <div class="tile"><div class="n">411 mil.</div><div class="d">výpadek oproti plánu poplatků na rok 2026 (2 476 mil.), tj. -16,6 %</div></div>
+    <div class="tile"><div class="n">-7,6 %</div><div class="d">změna počtu zaměstnanců ČRo 2008 → 2025 (1 465 → 1 354)</div></div>
+    <div class="tile"><div class="n">+59 %</div><div class="d">růst průměrné mzdy v ČRo (v ČR celkem +118 %, ceny +71 %)</div></div>
+  </div>
+
+  <h3>Výnos ČRo z poplatků 2008–2025 a návrh 2028 (mld. Kč)</h3>
+  <div class="legend"><span><i style="background:var(--s1)"></i>nominálně</span><span><i style="background:var(--s2)"></i>v cenách roku 2008</span><span>čárkovaně: přechod na návrh 2028</span></div>
+  <svg viewBox='0 0 760 320' class='chart' role='img' aria-labelledby='g3t'><title id='g3t'>Výnos ČRo z poplatků 2008–2025 a návrh 2028, nominálně a v cenách roku 2008</title><line x1='46' x2='744' y1='286' y2='286' class='grid'/><text x='40' y='290' class='ax' text-anchor='end'>1,00</text><line x1='46' x2='744' y1='241' y2='241' class='grid'/><text x='40' y='245' class='ax' text-anchor='end'>1,25</text><line x1='46' x2='744' y1='196' y2='196' class='grid'/><text x='40' y='200' class='ax' text-anchor='end'>1,50</text><line x1='46' x2='744' y1='151' y2='151' class='grid'/><text x='40' y='155' class='ax' text-anchor='end'>1,75</text><line x1='46' x2='744' y1='106' y2='106' class='grid'/><text x='40' y='110' class='ax' text-anchor='end'>2,00</text><line x1='46' x2='744' y1='61' y2='61' class='grid'/><text x='40' y='65' class='ax' text-anchor='end'>2,25</text><line x1='46' x2='744' y1='16' y2='16' class='grid'/><text x='40' y='20' class='ax' text-anchor='end'>2,50</text><text x='46' y='310' class='ax' text-anchor='middle'>2008</text><text x='185.6' y='310' class='ax' text-anchor='middle'>2012</text><text x='325.2' y='310' class='ax' text-anchor='middle'>2016</text><text x='464.8' y='310' class='ax' text-anchor='middle'>2020</text><text x='604.4' y='310' class='ax' text-anchor='middle'>2024</text><text x='744' y='310' class='ax' text-anchor='middle'>2028</text><polyline points='46,114.1 80.9,108.2 115.8,110.6 150.7,112.3 185.6,115 220.5,105.9 255.4,101.1 290.3,97.7 325.2,94.5 360.1,90.7 395,90.3 429.9,89 464.8,90.8 499.7,91.9 534.6,93.1 569.5,94.7 604.4,94.2 639.3,49.1' class='ln s1'/><line x1='639.3' y1='49.1' x2='744' y2='94.3' class='ln s1 dash'/><circle cx='46' cy='114.1' r='3' class='pt s1' data-tip='2008 – Nominálně: 1,95 mld. Kč'/><circle cx='80.9' cy='108.2' r='3' class='pt s1' data-tip='2009 – Nominálně: 1,99 mld. Kč'/><circle cx='115.8' cy='110.6' r='3' class='pt s1' data-tip='2010 – Nominálně: 1,97 mld. Kč'/><circle cx='150.7' cy='112.3' r='3' class='pt s1' data-tip='2011 – Nominálně: 1,96 mld. Kč'/><circle cx='185.6' cy='115' r='3' class='pt s1' data-tip='2012 – Nominálně: 1,95 mld. Kč'/><circle cx='220.5' cy='105.9' r='3' class='pt s1' data-tip='2013 – Nominálně: 2,00 mld. Kč'/><circle cx='255.4' cy='101.1' r='3' class='pt s1' data-tip='2014 – Nominálně: 2,03 mld. Kč'/><circle cx='290.3' cy='97.7' r='3' class='pt s1' data-tip='2015 – Nominálně: 2,05 mld. Kč'/><circle cx='325.2' cy='94.5' r='3' class='pt s1' data-tip='2016 – Nominálně: 2,06 mld. Kč'/><circle cx='360.1' cy='90.7' r='3' class='pt s1' data-tip='2017 – Nominálně: 2,08 mld. Kč'/><circle cx='395' cy='90.3' r='3' class='pt s1' data-tip='2018 – Nominálně: 2,09 mld. Kč'/><circle cx='429.9' cy='89' r='3' class='pt s1' data-tip='2019 – Nominálně: 2,09 mld. Kč'/><circle cx='464.8' cy='90.8' r='3' class='pt s1' data-tip='2020 – Nominálně: 2,08 mld. Kč'/><circle cx='499.7' cy='91.9' r='3' class='pt s1' data-tip='2021 – Nominálně: 2,08 mld. Kč'/><circle cx='534.6' cy='93.1' r='3' class='pt s1' data-tip='2022 – Nominálně: 2,07 mld. Kč'/><circle cx='569.5' cy='94.7' r='3' class='pt s1' data-tip='2023 – Nominálně: 2,06 mld. Kč'/><circle cx='604.4' cy='94.2' r='3' class='pt s1' data-tip='2024 – Nominálně: 2,07 mld. Kč'/><circle cx='639.3' cy='49.1' r='3' class='pt s1' data-tip='2025 – Nominálně: 2,32 mld. Kč'/><circle cx='744' cy='94.3' r='5' class='pt s1' data-tip='2028 – Nominálně: 2,07 mld. Kč (návrh vlády)'/><polyline points='46,114.1 80.9,111.8 115.8,119.3 150.7,127.5 185.6,140.7 220.5,136.9 255.4,133.8 290.3,131.7 325.2,131.2 360.1,136 395,142.5 429.9,150.2 464.8,161.4 499.7,173.4 534.6,212.7 569.5,238.1 604.4,243.1 639.3,222.2' class='ln s2'/><line x1='639.3' y1='222.2' x2='744' y2='261.2' class='ln s2 dash'/><circle cx='46' cy='114.1' r='3' class='pt s2' data-tip='2008 – V cenách 2008: 1,95 mld. Kč'/><circle cx='80.9' cy='111.8' r='3' class='pt s2' data-tip='2009 – V cenách 2008: 1,97 mld. Kč'/><circle cx='115.8' cy='119.3' r='3' class='pt s2' data-tip='2010 – V cenách 2008: 1,93 mld. Kč'/><circle cx='150.7' cy='127.5' r='3' class='pt s2' data-tip='2011 – V cenách 2008: 1,88 mld. Kč'/><circle cx='185.6' cy='140.7' r='3' class='pt s2' data-tip='2012 – V cenách 2008: 1,81 mld. Kč'/><circle cx='220.5' cy='136.9' r='3' class='pt s2' data-tip='2013 – V cenách 2008: 1,83 mld. Kč'/><circle cx='255.4' cy='133.8' r='3' class='pt s2' data-tip='2014 – V cenách 2008: 1,85 mld. Kč'/><circle cx='290.3' cy='131.7' r='3' class='pt s2' data-tip='2015 – V cenách 2008: 1,86 mld. Kč'/><circle cx='325.2' cy='131.2' r='3' class='pt s2' data-tip='2016 – V cenách 2008: 1,86 mld. Kč'/><circle cx='360.1' cy='136' r='3' class='pt s2' data-tip='2017 – V cenách 2008: 1,83 mld. Kč'/><circle cx='395' cy='142.5' r='3' class='pt s2' data-tip='2018 – V cenách 2008: 1,80 mld. Kč'/><circle cx='429.9' cy='150.2' r='3' class='pt s2' data-tip='2019 – V cenách 2008: 1,75 mld. Kč'/><circle cx='464.8' cy='161.4' r='3' class='pt s2' data-tip='2020 – V cenách 2008: 1,69 mld. Kč'/><circle cx='499.7' cy='173.4' r='3' class='pt s2' data-tip='2021 – V cenách 2008: 1,63 mld. Kč'/><circle cx='534.6' cy='212.7' r='3' class='pt s2' data-tip='2022 – V cenách 2008: 1,41 mld. Kč'/><circle cx='569.5' cy='238.1' r='3' class='pt s2' data-tip='2023 – V cenách 2008: 1,27 mld. Kč'/><circle cx='604.4' cy='243.1' r='3' class='pt s2' data-tip='2024 – V cenách 2008: 1,24 mld. Kč'/><circle cx='639.3' cy='222.2' r='3' class='pt s2' data-tip='2025 – V cenách 2008: 1,35 mld. Kč'/><circle cx='744' cy='261.2' r='5' class='pt s2' data-tip='2028 – V cenách 2008: 1,14 mld. Kč (návrh vlády)'/><text x='744' y='118.3' class='lbl' text-anchor='end'>návrh 2028</text></svg>
+  <div class="tw"><table>
+    <thead><tr><th>Rok</th><th>Výnosy celkem (mil.)</th><th>z toho poplatky (mil.)</th><th>Poplatky v cenách 2008</th><th>Zaměstnanci</th><th>Prům. mzda ČRo</th><th>Výnosy na zaměstnance v cenách 2008</th></tr></thead>
+    <tbody>
+          <tr class="hl">
+        <td>2008</td><td>2 243</td><td>1 955</td><td>1 955</td>
+        <td>1 465</td><td>30 830 Kč</td><td>1 531 tis.</td>
+      </tr>
+          <tr>
+        <td>2009</td><td>2 237</td><td>1 988</td><td>1 968</td>
+        <td>1 470</td><td>31 487 Kč</td><td>1 507 tis.</td>
+      </tr>
+          <tr>
+        <td>2010</td><td>2 205</td><td>1 974</td><td>1 926</td>
+        <td>1 453</td><td>32 047 Kč</td><td>1 481 tis.</td>
+      </tr>
+          <tr>
+        <td>2011</td><td>2 189</td><td>1 965</td><td>1 881</td>
+        <td>1 425</td><td>32 747 Kč</td><td>1 470 tis.</td>
+      </tr>
+          <tr>
+        <td>2012</td><td>2 158</td><td>1 950</td><td>1 807</td>
+        <td>1 415</td><td>33 867 Kč</td><td>1 414 tis.</td>
+      </tr>
+          <tr>
+        <td>2013</td><td>2 322</td><td>2 000</td><td>1 828</td>
+        <td>1 430</td><td>37 021 Kč</td><td>1 484 tis.</td>
+      </tr>
+          <tr>
+        <td>2014</td><td>2 236</td><td>2 027</td><td>1 845</td>
+        <td>1 464</td><td>36 639 Kč</td><td>1 390 tis.</td>
+      </tr>
+          <tr>
+        <td>2015</td><td>2 249</td><td>2 046</td><td>1 857</td>
+        <td>1 464</td><td>37 634 Kč</td><td>1 394 tis.</td>
+      </tr>
+          <tr>
+        <td>2016</td><td>2 212</td><td>2 064</td><td>1 860</td>
+        <td>1 486</td><td>37 436 Kč</td><td>1 342 tis.</td>
+      </tr>
+          <tr>
+        <td>2017</td><td>2 298</td><td>2 085</td><td>1 833</td>
+        <td>1 490</td><td>37 901 Kč</td><td>1 357 tis.</td>
+      </tr>
+          <tr>
+        <td>2018</td><td>2 264</td><td>2 087</td><td>1 797</td>
+        <td>1 478</td><td>39 394 Kč</td><td>1 320 tis.</td>
+      </tr>
+          <tr>
+        <td>2019</td><td>2 295</td><td>2 094</td><td>1 754</td>
+        <td>1 420</td><td>41 324 Kč</td><td>1 355 tis.</td>
+      </tr>
+          <tr>
+        <td>2020</td><td>2 299</td><td>2 084</td><td>1 692</td>
+        <td>1 417</td><td>42 386 Kč</td><td>1 317 tis.</td>
+      </tr>
+          <tr>
+        <td>2021</td><td>2 321</td><td>2 078</td><td>1 625</td>
+        <td>1 413</td><td>42 938 Kč</td><td>1 284 tis.</td>
+      </tr>
+          <tr>
+        <td>2022</td><td>2 258</td><td>2 071</td><td>1 407</td>
+        <td>1 378</td><td>43 432 Kč</td><td>1 113 tis.</td>
+      </tr>
+          <tr>
+        <td>2023</td><td>2 289</td><td>2 063</td><td>1 266</td>
+        <td>1 353</td><td>45 670 Kč</td><td>1 038 tis.</td>
+      </tr>
+          <tr class="hl">
+        <td>2024</td><td>2 401</td><td>2 066</td><td>1 238</td>
+        <td>1 360</td><td>46 665 Kč</td><td>1 058 tis.</td>
+      </tr>
+          <tr class="hl">
+        <td>2025</td><td>2 583</td><td>2 316</td><td>1 354</td>
+        <td>1 354</td><td>49 076 Kč</td><td>1 116 tis.</td>
+      </tr>
+          <tr class="hl"><td>2028 (návrh)</td><td>—</td><td>2 065</td><td>1 138</td><td>—</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">Komerční výnosy ČRo (reklama, sponzoring, obchodní činnost) klesly z 142 mil. (2008) na 105 mil. (2024) a po novele 119/2025 Sb., která omezila reklamu, na 58 mil. (2025).
+  Celkové výnosy obsahují i jednorázové položky: prodeje nemovitostí v letech 2011 a 2013, čerpání fondů a dotaci MZV na zahraniční vysílání (asi 30 mil. ročně). Výnosy z poplatků se účtují podle předpisu, ne podle skutečně vybrané hotovosti.
+  Mzdy za roky 2008–2011 jsou z víceleté tabulky ve zprávě za rok 2011.</p>
+</section>
+
+<section id="srovnani">
+  <h2>ČT a ČRo vedle sebe</h2>
+  <div class='player'><span>🔊 Poslechnout sekci</span><audio controls preload='none' src='audio/srovnani.mp3'></audio></div>    <div class="tw"><table class="cmp">
+    <thead><tr><th>Ukazatel</th><th>Česká televize</th><th>Český rozhlas</th></tr></thead>
+    <tbody>
+          <tr><td>Poplatek měsíčně: původní → dnes</td><td>135 → 150 Kč (+11 %)</td><td>45 → 55 Kč (+22 %)</td></tr>
+          <tr><td>Původní poplatek platil od</td><td>1. 1. 2008</td><td>1. 10. 2005</td></tr>
+          <tr><td>Poplatek z roku 2008 přepočtený inflací na rok 2025</td><td>231 Kč</td><td>77 Kč</td></tr>
+          <tr><td>Výnos z poplatků 2008</td><td>5 787 mil.</td><td>1 955 mil.</td></tr>
+          <tr><td>Výnos z poplatků 2024 (před zvýšením)</td><td>5 742 mil.</td><td>2 066 mil.</td></tr>
+          <tr><td>Výnos z poplatků 2025</td><td>6 338 mil.</td><td>2 316 mil.</td></tr>
+          <tr><td>Plán poplatků 2026</td><td>6 730 mil.</td><td>2 476 mil.</td></tr>
+          <tr><td>Návrh vlády – roční příspěvek (od 2028)</td><td>5 740 mil.</td><td>2 065 mil.</td></tr>
+          <tr><td>Příspěvek vs. plán poplatků 2026</td><td>-14,7 %</td><td>-16,6 %</td></tr>
+          <tr><td>Příspěvek reálně (v roce 2028) vs. poplatky 2008</td><td>55 %</td><td>58 %</td></tr>
+          <tr><td>Podíl poplatků na výnosech 2025</td><td>85 %</td><td>90 %</td></tr>
+          <tr><td>Podíl na navrženém příspěvku celkem</td><td>73,5 %</td><td>26,5 %</td></tr>
+          <tr><td>Konec výjimky z DPH od 2028 (ročně)</td><td>−420 mil.</td><td>−130 mil.</td></tr>
+          <tr><td>Příspěvek na obyvatele a rok</td><td>527 Kč</td><td>189 Kč</td></tr>
+          <tr><td>Zaměstnanci 2008 → 2025</td><td>2 881 → 2 878 (-0,1 %)</td><td>1 465 → 1 354 (-7,6 %)</td></tr>
+          <tr><td>Průměrná mzda 2008 → 2025</td><td>32 934 → 60 745 Kč (+84 %)</td><td>30 830 → 49 076 Kč (+59 %)</td></tr>
+          <tr><td>Mzda vůči průměru ČR: 2008 → 2025</td><td>146 % → 123 %</td><td>136 % → 100 %</td></tr>
+          <tr><td>Celkové výnosy 2008 → 2025 reálně</td><td>-35 %</td><td>-33 %</td></tr>
+          <tr><td>Výnosy na zaměstnance 2025</td><td>2 591 tis. Kč</td><td>1 908 tis. Kč</td></tr>
+          <tr><td>Ohlášené propouštění při schválení návrhu</td><td>300–500 lidí</td><td>150–200 lidí</td></tr>
+        </tbody>
+  </table></div>
+  <p class="muted">Rozhlas měl starý poplatek o tři roky déle a počet zaměstnanců snížil už před návrhem (−8 %, ČT zůstala na stejném počtu). Mzdy v ČRo jsou dnes zhruba na úrovni průměrné mzdy v ČR, v ČT asi o čtvrtinu vyšší.
+  Argument vlády o dostatečných rezervách se týkal hlavně ČT (hotovost asi 1,8 mld. Kč na konci roku 2025).</p>
+</section>
+
+<section id="dluh">
+  <h2>Stát jede na dluh: kolik stojí úroky</h2>
+  <div class='player'><span>🔊 Poslechnout sekci</span><audio controls preload='none' src='audio/dluh.mp3'></audio></div>  <p>Poplatky dnes stojí mimo státní rozpočet. Jakmile se z nich stane výdaj rozpočtu, který je ve schodku (návrh na rok 2027: <strong>386 mld. Kč</strong>),
+  zvětší každá koruna navíc schodek, pokud se jinde neušetří. Stát si tedy bude 7,81 mld. Kč ročně půjčovat a platit z nich úroky.</p>
+  <div class="tiles">
+    <div class="tile"><div class="n">3 882 mld.</div><div class="d">státní dluh k 30. 9. 2026 (MF)</div></div>
+    <div class="tile"><div class="n">4,7 %</div><div class="d">průměrný výnos nově prodaných státních dluhopisů v roce 2026. Tolik dnes stojí každá nově půjčená koruna.</div></div>
+    <div class="tile"><div class="n">98,1 mld.</div><div class="d">čisté výdaje na obsluhu státního dluhu v roce 2025 (průměrný náklad celého dluhu asi 2,8 %)</div></div>
+    <div class="tile"><div class="n">21,0 mld.</div><div class="d">úroky navíc za 10 let (2028–2037), pokud se příspěvek celý financuje dluhem při 4,7 %</div></div>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Rok</th><th>Příspěvek ČT + ČRo</th><th>Úroky v daném roce</th><th>Dluh navíc (kumulovaně)</th><th>Úroky celkem od 2028</th></tr></thead>
+    <tbody>
+          <tr><td>2028</td><td>7 805 mil.</td><td>183 mil.</td><td>8,0 mld.</td><td>183 mil.</td></tr>
+          <tr><td>2029</td><td>7 805 mil.</td><td>559 mil.</td><td>16,4 mld.</td><td>742 mil.</td></tr>
+          <tr><td>2030</td><td>7 805 mil.</td><td>952 mil.</td><td>25,1 mld.</td><td>1 694 mil.</td></tr>
+          <tr><td>2031</td><td>7 805 mil.</td><td>1 364 mil.</td><td>34,3 mld.</td><td>3 058 mil.</td></tr>
+          <tr><td>2032</td><td>7 805 mil.</td><td>1 794 mil.</td><td>43,9 mld.</td><td>4 852 mil.</td></tr>
+          <tr><td>2033</td><td>7 805 mil.</td><td>2 246 mil.</td><td>53,9 mld.</td><td>7 098 mil.</td></tr>
+          <tr><td>2034</td><td>7 805 mil.</td><td>2 718 mil.</td><td>64,5 mld.</td><td>9 816 mil.</td></tr>
+          <tr><td>2035</td><td>7 805 mil.</td><td>3 213 mil.</td><td>75,5 mld.</td><td>13 029 mil.</td></tr>
+          <tr><td>2036</td><td>7 805 mil.</td><td>3 730 mil.</td><td>87,0 mld.</td><td>16 759 mil.</td></tr>
+          <tr><td>2037</td><td>7 805 mil.</td><td>4 273 mil.</td><td>99,1 mld.</td><td>21 032 mil.</td></tr>
+        </tbody>
+  </table></div>
+  <p class="muted">Model počítá s tím, že se celý příspěvek (bez valorizace) i úroky z něj platí novým dluhem za 4,7 % ročně. Příspěvek se vyplácí měsíčně, proto se v prvním roce úročí v průměru polovina.
+  Při průměrném nákladu celého dluhu (2,8 %) by úroky byly asi o 40 % nižší. Pokud stát ušetří na DPH od ČT a ČRo (asi 550 mil. ročně, viz výše), sníží se půjčovaná částka asi o 7 %.
+  Peníze v rozpočtu nejsou „označené“. Jde o to, o kolik se zvýší schodek, pokud vláda neušetří jinde nebo nezvýší daně.</p>
+</section>
+
+<section id="valorizace">
+  <h2>Valorizace: kdy příspěvek poprvé vzroste?</h2>
+  <div class='player'><span>🔊 Poslechnout sekci</span><audio controls preload='none' src='audio/valorizace.mp3'></audio></div>  <p>Podle návrhu se příspěvek zvýší o 10 %, až <em>součet</em> ročních měr inflace (počítáno od roku 2026) dosáhne 10 procentních bodů. Mezitím zůstává částka stejná. Tabulka začíná prvním realistickým rokem 2028, do kterého se už započítá inflace za roky 2026 a 2027.
+  Zkuste si nastavit průměrnou inflaci a podívejte se, kolik ČT reálně ztratí, než přijde první navýšení.</p>
+  <div class="calc">
+    <label for="inf">Předpokládaná inflace ročně:</label>
+    <input type="range" id="inf" min="0.5" max="6" step="0.1" value="2.5">
+    <output id="infOut">2,5 %</output>
+  </div>
+  <div class="tw"><table id="valTab">
+    <thead><tr><th>Rok</th><th>Součet inflace od 2026</th><th>Příspěvek ČT (mil. Kč)</th><th>Reálně v cenách roku 2028</th><th>Reálná ztráta vs. 2028</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <p class="muted">Zjednodušený model: navýšení se projeví v roce následujícím po roce, kdy součet dosáhne 10 p. b. Pak se součet počítá znovu. Za rok 2026 se použije stejná hodnota jako pro ostatní roky. Přesné znění valorizace najdete v textu tisku 231.</p>
+</section>
+
+<section id="argumenty">
+  <h2>Hlavní argumenty obou stran</h2>
+  <div class='player'><span>🔊 Poslechnout sekci</span><audio controls preload='none' src='audio/argumenty.mp3'></audio></div>  <div class="two">
+    <div class="side">
+      <h3>Pro změnu (vláda, ANO, SPD, Motoristé)</h3>
+      <ul>
+        <li>Úleva pro domácnosti a firmy: domácnost ušetří 2 460 Kč ročně, odpadne evidence a vymáhání poplatků.</li>
+        <li>Firmy už nebudou platit podle počtu zaměstnanců (až 246 000 Kč ročně) a nebudou muset hlásit počty zaměstnanců ani vozidel.</li>
+        <li>Financování se „vrací na úroveň roku 2024“, kdy podle vlády ČT a ČRo ve výročních zprávách nehlásily nedostatek peněz.</li>
+        <li>Média budou samostatnou rozpočtovou kapitolou a NKÚ bude kontrolovat i jejich hospodaření s majetkem. Podle vlády to znamená víc transparentnosti.</li>
+        <li>Financování ze státního rozpočtu používají i jiné evropské země (např. severské státy, kde je ale vázané na zvláštní daň).</li>
+        <li>Mění se jen způsob financování, ne nezávislost ani obsah vysílání (Babiš, Klempíř).</li>
+        <li>Tlak na efektivitu: ředitelé zvládli navýšení, zvládnou i mírně nižší rozpočet (Klempíř).</li>
+      </ul>
+    </div>
+    <div class="side">
+      <h3>Proti (opozice, ČT, ČRo, novinářské organizace)</h3>
+      <ul>
+        <li>Nezávislost: o penězích by každý rok rozhodovala vládní většina, což média vystavuje politickému tlaku („zestátnění“).</li>
+        <li>Výše: „úroveň 2024“ je nominálně úroveň roku 2008. Reálně jde zhruba o 45 % méně než v roce 2008.</li>
+        <li>Valorizace přichází se zpožděním, jen po skocích o 10 % a jen jednou za několik let.</li>
+        <li>Ve stejném roce (2028) končí výjimka z DPH. ČT a ČRo tak přijdou ještě o dalších asi 550 mil. Kč ročně.</li>
+        <li>Platit budou přes daně všichni, i ti, kdo jsou dnes osvobozeni (nejchudší domácnosti, lidé bez přijímače).</li>
+        <li>Rozpočet je ve schodku, takže stát si bude příspěvek nejspíš půjčovat. Za 10 let to může stát asi 21 mld. Kč jen na úrocích.</li>
+        <li>Dopad: ČT uvádí propuštění 300–500 lidí, ČRo 150–200 lidí (z asi 1 350). Ubude i vlastní tvorby.</li>
+        <li>Rozhlas už v letech 2008–2025 snížil počet zaměstnanců o 8 % a po novele z roku 2025 přišel o polovinu reklamních příjmů.</li>
+        <li>Česká pošta přijde asi o 275 mil. Kč ročně za výběr poplatků (připomínka MV). Ministerstvo financí upozornilo, že návrh neurčuje kapitolu rozpočtu.</li>
+        <li>Postup ve Sněmovně: pevný čas hlasování, omezená rozprava, 65 přihlášených poslanců nevystoupilo. Opozice zvažuje Ústavní soud.</li>
+        <li>Proti se vyslovily Rada ČT, Senát (usnesení), Syndikát novinářů, Reportéři bez hranic, EBU, Evropská federace novinářů a Česká konference rektorů.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="dokumenty">
+  <h2>Kde si ověřit originály (psp.cz)</h2>
+  <ul class="src">
+    <li><strong>Projednávaný vládní návrh: sněmovní tisk 231</strong>, „Novela z. o České televizi a o Českém rozhlasu“ (ruší zákon č. 348/2005 Sb. o poplatcích), předložen 19. 6. 2026:
+      <a href="https://www.psp.cz/sqw/text/tiskt.sqw?O=10&amp;CT=231&amp;CT1=0" target="_blank" rel="noopener">text tisku 231/0</a> ·
+      <a href="https://www.psp.cz/sqw/historie.sqw?o=10&amp;t=231" target="_blank" rel="noopener">historie projednávání</a></li>
+    <li>Souběžně je na pořadu <strong>poslanecký tisk 201</strong> (Nacher, Okamura a další). Ten poplatky neruší, jen rozšiřuje osvobození (lidé nad 75 let, nezaopatřené děti, držitelé průkazů TP/ZTP, sociální a zdravotní zařízení):
+      <a href="https://www.psp.cz/sqw/historie.sqw?o=10&amp;t=201" target="_blank" rel="noopener">historie tisku 201</a></li>
+    <li><strong>Stenoprotokoly</strong> 34. schůze (noční rozprava 23.–24. 10. 2026):
+      <a href="https://www.psp.cz/eknih/2025ps/stenprot/034schuz/index.htm" target="_blank" rel="noopener">psp.cz – 34. schůze, stenoprotokoly</a></li>
+    <li><strong>Hlasování</strong> 34. schůze (jmenovitě, kdo jak hlasoval, 24. 10. 2026):
+      <a href="https://www.psp.cz/sqw/phlasa.sqw?o=10&amp;s=34" target="_blank" rel="noopener">psp.cz – hlasování 34. schůze</a></li>
+    <li>Pořad 34. schůze (bod 34 = tisk 231, bod 97 = tisk 201; jsou tu i výroční zprávy ČT a ČRo za rok 2025, tisky 224 a 292):
+      <a href="https://www.psp.cz/sqw/ischuze.sqw?o=10&amp;s=34" target="_blank" rel="noopener">pořad schůze</a></li>
+  </ul>
+
+  <h3>Zdroje dat</h3>
+  <ul class="src">
+    <li>Hospodaření ČT 2008–2025: <a href="https://www.ceskatelevize.cz/vse-o-ct/hospodareni-a-financni-situace/vybrane-ukazatele-hospodareni/" target="_blank" rel="noopener">ČT – Vybrané ukazatele hospodaření</a>; <a href="https://www.lupa.cz/clanky/vice-penez-mene-lidi-ct-ukazala-hospodareni-v-prvnim-roce-s-vyssim-poplatkem/" target="_blank" rel="noopener">Lupa.cz – hospodaření ČT 2025</a></li>
+    <li>Inflace: <a href="https://csu.gov.cz/pak/mira-inflace-v-cr-v-srpnu-2026" target="_blank" rel="noopener">ČSÚ – míra inflace (tabulka průměrných ročních měr)</a></li>
+    <li>Průměrná mzda: <a href="https://csu.gov.cz/rychle-informace/prumerne-mzdy-4-ctvrtleti-2025" target="_blank" rel="noopener">ČSÚ – průměrné mzdy 4. čtvrtletí 2025</a>, <a href="https://csu.gov.cz/produkty/pmz_cr" target="_blank" rel="noopener">ČSÚ – časová řada</a></li>
+    <li>Minimální mzda: <a href="https://mpsv.gov.cz/minimalni-mzda-od-ledna-2026-vzroste-o-1-600-korun-na-22-400-korun-mesicne" target="_blank" rel="noopener">MPSV</a>, <a href="https://www.vzp.cz/platci/informace/obzp/minimalni-mzda" target="_blank" rel="noopener">VZP – přehled</a></li>
+    <li>Důchody: <a href="https://cs.wikipedia.org/wiki/Starobn%C3%AD_d%C5%AFchod" target="_blank" rel="noopener">řada ČSSZ (přes Wikipedii) pro 2005/2008</a>, <a href="https://mpsv.gov.cz/duchody-se-v-lednu-opet-navysi-prumerna-starobni-penze-dosahne-21-839-korun-mesicne" target="_blank" rel="noopener">MPSV – valorizace 2026</a></li>
+    <li>Návrh vlády a částky: <a href="https://vlada.gov.cz/cz/media-centrum/aktualne/vlada-andreje-babise-schvalila-navrh-na-zmenu-financovani-ceske-televize-a-ceskeho-rozhlasu-227533/" target="_blank" rel="noopener">vlada.gov.cz (15. 6. 2026)</a>, <a href="https://www.mediaguru.cz/vlada-schvalila-zruseni-poplatku-pro-ct-a-cro-z-rozpoctu-jim-da-o-1-4-mld-mene" target="_blank" rel="noopener">MediaGuru</a></li>
+    <li>Průběh 1. čtení: <a href="https://www.ceskenoviny.cz/zpravy/koalice-poslala-do-druheho-cteni-navrh-zrusit-poplatky-pro-ct-a-cro/2891827" target="_blank" rel="noopener">ČTK / České noviny</a>, <a href="https://www.irozhlas.cz/zpravy-domov/otazky-a-odpovedi-co-znamena-schvaleni-navrhu-o-koncesionarskych-poplatcich-a-co_2610241447_pik" target="_blank" rel="noopener">iRozhlas – otázky a odpovědi</a>, <a href="https://www.newstream.cz/politika/konec-koncesionarskych-poplatku-je-bliz-snemovna-zazila-dvacetihodinovou-bitvu" target="_blank" rel="noopener">Newstream</a></li>
+    <li>Hospodaření ČRo 2008–2025: výroční zprávy o hospodaření ČRo předkládané Sněmovně, např. <a href="https://www.psp.cz/sqw/historie.sqw?o=10&amp;t=292" target="_blank" rel="noopener">za rok 2025 (tisk 292)</a>, <a href="https://www.psp.cz/sqw/historie.sqw?o=10&amp;t=39" target="_blank" rel="noopener">za rok 2024 (tisk 39)</a>, <a href="https://informace.rozhlas.cz/sites/default/files/documents/76e5af6835fa4417b9f81795ed7822df.pdf" target="_blank" rel="noopener">za rok 2019</a>, <a href="https://rada.rozhlas.cz/sites/default/files/documents/00990620_0.pdf" target="_blank" rel="noopener">za rok 2008</a>; <a href="https://www.e15.cz/domaci/stovky-lidi-prijdou-o-praci-ceska-televize-a-rozhlas-se-chystaji-na-tvrde-skrty-1433567" target="_blank" rel="noopener">E15 – dopady na ČRo</a></li>
+    <li>Výjimka z DPH a termín účinnosti: <a href="https://www.mediar.cz/ct-i-rozhlas-za-dva-roky-prijdou-celkove-az-o-20-pct-prijmu-skonci-vyjimka-na-dph/" target="_blank" rel="noopener">Médiář (17. 6. 2026)</a>, <a href="https://ct24.ceskatelevize.cz/clanek/media/propad-rozpoctu-kvuli-zmene-financovani-muze-byt-175-miliardy-korun-uvedla-ct-374749" target="_blank" rel="noopener">ČT24</a>, <a href="https://www.lupa.cz/aktuality/vyjimka-z-dph-pro-ceskou-televizi-a-cesky-rozhlas-nakonec-bude-platit-dal/" target="_blank" rel="noopener">Lupa.cz – prodloužení výjimky</a>, <a href="https://www.ceskatelevize.cz/vse-o-ct/api/media/documents/Dlouhodobe_plany_CT_2026-2030.pdf" target="_blank" rel="noopener">Dlouhodobé plány ČT 2026–2030</a>, <a href="https://denikn.cz/2194737/budoucnost-poplatku-ct-a-cro-pred-vypjatou-snemovni-debatou-spolehaji-na-uzavrena-jednani/" target="_blank" rel="noopener">Deník N (Klempíř, Schillerová)</a>, <a href="https://ceskeduchody.cz/zpravy/konec-poplatku-pro-duchodce-se-vzdaluje" target="_blank" rel="noopener">rezerva v rozpočtu 2027</a>, <a href="https://www.denik.cz/ekonomika/konec-poplatku-za-ct-a-rozhlas-co-bude-nasledovat-kdy-je-lide-prestanou-platit/" target="_blank" rel="noopener">Deník – lhůty</a></li>
+    <li>Výjimky a firmy: <a href="https://www.arecenze.cz/clanky/poplatky-za-ct-a-rozhlas-2026-nizkoprijmove-domacnosti-je-platit-nemusi-od-rijna-dosahne-na-vyjimku-vic-lidi/" target="_blank" rel="noopener">aRecenze – osvobození 2026</a>, <a href="https://www.mediaguru.cz/prehled-zmena-poplatku-za-ct-a-cro-kdo-kdy-a-kolik-plati" target="_blank" rel="noopener">MediaGuru – kdo, kdy a kolik platí</a>, <a href="https://www.mediaguru.cz/poplatky-za-ct-a-cro-do-30-cervna-firmy-hlasi-pocet-zamestnancu" target="_blank" rel="noopener">MediaGuru – firmy a zaměstnanci</a>, <a href="https://www.lupa.cz/aktuality/skupina-vladnich-poslancu-navrhuje-osekat-televizni-a-rozhlasove-poplatky/" target="_blank" rel="noopener">Lupa.cz – tisk 201</a></li>
+    <li>Státní dluh: <a href="https://mf.gov.cz/cs/rozpoctova-politika/rizeni-statniho-dluhu/publikace/dluhove-portfolio-ctvrtletni-informace/2026/ctvrtletni-zprava-o-rizeni-statniho-dluhu-ceske-re-65501" target="_blank" rel="noopener">MF – Čtvrtletní zpráva o řízení státního dluhu, 1.–3. čtvrtletí 2026</a>; schodek 2027: <a href="https://ct24.ceskatelevize.cz/clanek/domaci/vlada-se-bude-zabyvat-podobou-navrhu-statniho-rozpoctu-377105" target="_blank" rel="noopener">ČT24</a>, <a href="https://www.infodnes.cz/zpravodajstvi/72386-babisuv-kabinet-schvalil-navrh-statniho-rozpoctu-na-rok-2027-se-schodkem-386-miliard/" target="_blank" rel="noopener">InfoDnes</a></li>
+    <li>Historie výše poplatků: <a href="https://www.finance.cz/clanky/74581-jaka-je-cena-za-verejne-vysilani" target="_blank" rel="noopener">Finance.cz</a>, <a href="https://www.e15.cz/ekonomika/data-check-co-udelala-inflace-s-poplatkem-pro-ceskou-televizi-zkuste-si-vyvoj-dokreslit-v-nasi-hre-1432168" target="_blank" rel="noopener">E15 Data Check</a></li>
+  </ul>
+  <p class="muted"><strong>Metodické poznámky:</strong> Důchod 2008 (9 347 Kč) je roční průměr starobního důchodu. Za rok 2025 je použito 21 171 Kč, tedy stav před lednovou valorizací 2026 (21 839 Kč − 668 Kč podle MPSV). Obě čísla nejsou metodicky úplně shodná.
+  Průměrná mzda ČT je mzda z výkazů ČT, průměrná mzda ČR je údaj ČSÚ. Inflace 2026–2028 je odhad. Všechny výpočty dělá tato stránka sama z dat v hlavičce souboru <code>index.php</code>.</p>
+</section>
+
+<footer>Sestaveno 25. 10. 2026 z veřejných zdrojů. Čísla jsou zaokrouhlená. Pokud najdete chybu, opravte data v horní části souboru, stránka se přepočítá.</footer>
+</div>
+
+<div id="tip" role="tooltip"></div>
+<script>
+(function () {
+  // Tooltipy pro grafy
+  var tip = document.getElementById('tip');
+  document.querySelectorAll('[data-tip]').forEach(function (el) {
+    el.addEventListener('mousemove', function (e) {
+      tip.textContent = el.getAttribute('data-tip');
+      tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 290) + 'px';
+      tip.style.top = (e.clientY + 14) + 'px';
+      tip.style.opacity = 1;
+    });
+    el.addEventListener('mouseleave', function () { tip.style.opacity = 0; });
+  });
+
+  // Přepínač režimu
+  var btn = document.getElementById('themeBtn');
+  try { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  btn.addEventListener('click', function () {
+    var cur = document.documentElement.getAttribute('data-theme')
+      || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+  });
+
+  // Simulace valorizace
+  var base = 5740;
+  var fmt = function (n, d) { return n.toLocaleString('cs-CZ', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); };
+  var inp = document.getElementById('inf'), out = document.getElementById('infOut');
+  var body = document.querySelector('#valTab tbody');
+  function run() {
+    var inf = parseFloat(inp.value);
+    out.textContent = fmt(inf, 1) + ' %';
+    var start = 2028;
+    var sum = inf * (start - 2026);   // součet měr inflace od roku 2026 do konce předchozího roku
+    var amount = base, rows = '';
+    for (var y = start; y <= start + 9; y++) {
+      var bump = false;
+      if (sum >= 10 - 1e-9) { amount *= 1.10; sum -= 10; bump = true; }
+      var price = Math.pow(1 + inf / 100, y - start);  // cenová hladina vůči prvnímu roku
+      var real = amount / price;
+      var loss = (real / base - 1) * 100;
+      rows += '<tr' + (bump ? ' class="hl"' : '') + '><td>' + y + (bump ? ' ▲ +10 %' : '') + '</td><td>' +
+        fmt(sum + 10 * bump, 1) + ' p. b.</td><td>' + fmt(amount) + '</td><td>' + fmt(real) +
+        '</td><td class="' + (loss < -0.05 ? 'neg' : '') + '">' + (y === start ? '—' : fmt(loss, 1) + ' %') + '</td></tr>';
+      sum += inf;
+    }
+    body.innerHTML = rows;
+  }
+  inp.addEventListener('input', run);
+  run();
+})();
+</script>
+</body>
+</html>
