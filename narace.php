@@ -88,7 +88,7 @@ function narace(): array
     global $navrh, $plan2026, $prvniRok, $cpi0825, $cpi0525, $navrhPodil, $croNavrhPodil, $ct, $cro, $prumMzda, $minMzda,
         $duchod, $tvDleInflace, $tvDleMzdy, $tvDleMin, $tvDleDuchodu, $roDleInflace, $roDleMzdy, $dph, $ctPlanPoplatky,
         $postaVypadek, $obyvatel, $navrhReal08, $croNavrhReal, $croKomercni, $navrhVs2026, $cro2026Vs, $ctPopl2008, $inflace,
-        $prijmovyLimit, $poplatekMesic, $dluh, $dluhSim, $prispevekCelkem;
+        $prijmovyLimit, $poplatekMesic, $dluh, $dluhSim, $prispevekCelkem, $scenarRealne, $scenare, $poplatekReal;
 
     $R = rokSl($prvniRok);
     $infl = proc(($cpi0825 - 1) * 100);
@@ -128,6 +128,18 @@ function narace(): array
         . "V cenách roku dva tisíce osm měl výnos z roku dva tisíce dvacet čtyři hodnotu jen " . mld($ctReal24) . ". "
         . "Navržený příspěvek bude mít v roce $R v cenách roku dva tisíce osm hodnotu asi " . mld($navrhReal08) . ", "
         . "tedy jen " . proc($navrhPodil) . " toho, co televize dostávala v roce dva tisíce osm."];
+
+    $s16 = $scenarRealne(2016); $s24 = $scenarRealne(2024); $s08 = $scenarRealne(2008); $stred = $scenare[3];
+    $s[] = ['kompromis', 'Kompromis: sejít se uprostřed, u roku dva tisíce šestnáct?',
+        "Mezi rokem dva tisíce osm a rokem dva tisíce dvacet čtyři je šestnáct let, polovina je rok dva tisíce šestnáct. "
+        . "Aby měla Česká televize v roce $R stejnou kupní sílu jako její výnos z poplatků v roce dva tisíce šestnáct, potřebovala by asi " . mld($s16['ct'], 1) . ". "
+        . "Český rozhlas by potřeboval asi " . mld($s16['cro'], 1) . ". Vláda přitom navrhuje " . mld($navrh['ct']) . " a " . mld($navrh['cro'], 3) . ". "
+        . "Měsíční poplatky sto třicet pět a čtyřicet pět korun z roku dva tisíce šestnáct by dnes odpovídaly asi " . kcs($poplatekReal(2016)) . ". Dnes se platí dvě stě pět korun. "
+        . "Proč střed nevychází uprostřed? Inflace nebyla rovnoměrná. Mezi lety dva tisíce osm a dva tisíce šestnáct vzrostly ceny jen asi o " . proc((cpi($inflace, 2008, 2016) - 1) * 100) . " a většina zdražení přišla až v letech dva tisíce dvacet jedna až dva tisíce dvacet tři. "
+        . "Úroveň roku dva tisíce šestnáct je proto skoro stejně vysoko jako úroveň roku dva tisíce osm a znamenala by víc peněz, než mají televize a rozhlas dnes. "
+        . "Kompromis v penězích, tedy střed mezi reálnou úrovní roku dva tisíce osm a dva tisíce dvacet čtyři, vychází pro televizi asi na " . mld($stred[1], 1) . " a pro rozhlas na " . mld($stred[2], 1) . ". "
+        . "Stát by to stálo asi o " . mld($stred[1] + $stred[2] - $prispevekCelkem, 1) . " ročně víc než vládní návrh. "
+        . "A ještě jedna věc: i skutečná úroveň roku dva tisíce dvacet čtyři po dorovnání inflace by byla " . mld($s24['ct'], 1) . " pro televizi, tedy víc, než vláda navrhuje."];
 
     $s[] = ['inflace', 'Kolik z poplatku snědla inflace',
         "Televizní poplatek sto třicet pět korun platil od prvního ledna dva tisíce osm do dubna dva tisíce dvacet pět. Pak se zvýšil na sto padesát korun. "

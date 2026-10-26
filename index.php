@@ -7,7 +7,7 @@ require __DIR__ . '/data.php';
 function player(string $id, string $label = 'Poslechnout sekci'): string
 {
     $f = "audio/$id.mp3";
-    if (!is_file(__DIR__ . "/$f")) return '';
+    if (!is_file(__DIR__ . "/$f") || filesize(__DIR__ . "/$f") === 0) return '';
     return "<div class='player'><span>🔊 " . h($label) . "</span><audio controls preload='none' src='$f'></audio></div>";
 }
 
@@ -262,6 +262,35 @@ footer{padding:10px 0 50px;color:var(--muted);font-size:14px}
   <h3>Výnos ČT z poplatků 2008–2025 a návrh <?= $prvniRok ?> (mld. Kč)</h3>
   <div class="legend"><span><i style="background:var(--s1)"></i>nominálně</span><span><i style="background:var(--s2)"></i>v cenách roku 2008</span><span>čárkovaně: přechod na návrh <?= $prvniRok ?></span></div>
   <?= lineChart($serie, 3.0, 6.5, 0.5, 'g1t', 'Výnos ČT z poplatků 2008–2025 a návrh ' . $prvniRok . ', nominálně a v cenách roku 2008') ?>
+</section>
+
+<section id="kompromis">
+  <h2>Kompromis: sejít se uprostřed, u roku 2016?</h2>
+  <?= player('kompromis') ?>
+  <p>Mezi rokem 2008, na který se odvolává opozice, a rokem 2024, na který se odvolává vláda, je 16 let. Polovina je rok 2016.
+  Tabulka ukazuje, kolik by ČT a ČRo musely dostat v prvním roce státního financování (<?= $prvniRok ?>), aby měly <strong>stejnou kupní sílu</strong> jako jejich výnos z poplatků v daném roce.</p>
+  <?php $uroky10 = end($dluhSim)['urokyCelkem']; ?>
+  <div class="tw"><table>
+    <thead><tr><th>Scénář (mil. Kč, rok <?= $prvniRok ?>)</th><th>ČT</th><th>ČRo</th><th>Celkem</th><th>Navíc oproti návrhu</th><th>Úroky z dluhu za 10 let</th></tr></thead>
+    <tbody>
+    <?php foreach ($scenare as $i => [$n, $a, $b]): $t = $a + $b; ?>
+      <tr<?= $i === 0 || str_contains($n, '2016') ? ' class="hl"' : '' ?>><td><?= h($n) ?></td><td><?= kc($a) ?></td><td><?= kc($b) ?></td><td><?= kc($t) ?></td>
+        <td><?= $i === 0 ? '—' : '+' . kc($t - $prispevekCelkem) ?></td><td><?= kc($uroky10 * $t / $prispevekCelkem) ?></td></tr>
+    <?php endforeach; ?>
+    </tbody>
+  </table></div>
+  <div class="tiles">
+    <div class="tile"><div class="n"><?= kc($scenarRealne(2016)['ct'] / 1000, 1) ?> mld.</div><div class="d">by potřebovala ČT v roce <?= $prvniRok ?>, aby měla kupní sílu roku 2016 (návrh: <?= kc($navrh['ct'] / 1000, 2) ?> mld.)</div></div>
+    <div class="tile"><div class="n"><?= kc($scenarRealne(2016)['cro'] / 1000, 1) ?> mld.</div><div class="d">totéž pro ČRo (návrh: <?= kc($navrh['cro'] / 1000, 3) ?> mld.)</div></div>
+    <div class="tile"><div class="n"><?= kc($poplatekReal(2016)) ?> Kč</div><div class="d">tolik by dnes odpovídalo měsíčním poplatkům 135 + 45 Kč v cenách roku 2016 (dnes se platí <?= $poplatekMesic ?> Kč, v cenách roku 2008 by to bylo <?= kc($poplatekReal(2008)) ?> Kč)</div></div>
+    <div class="tile"><div class="n"><?= kc(($scenarRealne(2016)['index'] - 1) * 100, 0) ?> %</div><div class="d">nárůst cen mezi lety 2016 a <?= $prvniRok ?> (z toho největší část v letech 2022–2023)</div></div>
+  </div>
+  <p><strong>Proč „střed“ nevychází uprostřed:</strong> inflace nebyla rozložená rovnoměrně. V letech 2009–2016 byla nízká, ceny vzrostly jen asi o <?= kc((cpi($inflace, 2008, 2016) - 1) * 100, 0) ?> %.
+  Většina zdražení přišla až v letech 2021–2023. Reálná úroveň roku 2016 je proto skoro stejně vysoko jako úroveň roku 2008 a o hodně výš než dnešní stav po zvýšení poplatků.
+  „Rok 2016“ by tak znamenal víc peněz, než mají ČT a ČRo dnes. Kompromis v penězích, tedy střed mezi reálnou úrovní 2008 a 2024, vychází pro ČT na <?= kc($scenare[3][1]) ?> mil., tedy ještě nad jejím vlastním plánem poplatků
+  (<?= kc($ctPlanPoplatky[2028]) ?> mil. na rok 2028), a stát by stál asi o <?= kc(($scenare[3][1] + $scenare[3][2] - $prispevekCelkem) / 1000, 1) ?> mld. ročně víc než vládní návrh.
+  Pozor: i „úroveň 2024 reálně“ je vyšší než vládní návrh, protože návrh inflaci za roky 2025–<?= $prvniRok ?> nedorovnává.</p>
+  <p class="muted">Výpočet: výnos z poplatků v daném roce × růst cen do roku <?= $prvniRok ?> (ČSÚ, pro roky 2026–<?= $prvniRok ?> odhad 2 % ročně). Úroky jsou přepočtené z modelu v sekci o dluhu (<?= kc($dluh['vynosNovych'], 1) ?> %, 10 let). Konec výjimky z DPH v tabulce není.</p>
 </section>
 
 <section id="inflace">

@@ -5,6 +5,8 @@
 param([switch]$Audio)
 $ErrorActionPreference = 'Stop'
 $dir = $PSScriptRoot
+# Výstup PHP je UTF-8; bez tohoto by ho PowerShell v některých konzolích přečetl ve špatném kódování.
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 function Invoke-Php([string[]]$PhpArgs) {
     if (Get-Command php -ErrorAction SilentlyContinue) {

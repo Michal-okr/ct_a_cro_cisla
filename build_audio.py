@@ -16,8 +16,17 @@ AUDIO = pathlib.Path(__file__).resolve().parent / "audio"
 RATE = "+0%"
 
 
-async def tts(text: str, voice: str, out: pathlib.Path) -> None:
-    await edge_tts.Communicate(text, voice, rate=RATE).save(str(out))
+async def tts(text: str, voice: str, out: pathlib.Path, pokusu: int = 4) -> None:
+    # Služba občas dočasně nevrací audio – zkusí to znovu s rostoucí pauzou.
+    for i in range(pokusu):
+        try:
+            await edge_tts.Communicate(text, voice, rate=RATE).save(str(out))
+            return
+        except edge_tts.exceptions.NoAudioReceived:
+            out.unlink(missing_ok=True)
+            if i == pokusu - 1:
+                raise
+            await asyncio.sleep(10 * (i + 1))
 
 
 async def main() -> None:

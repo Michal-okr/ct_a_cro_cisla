@@ -202,3 +202,22 @@ function dluhSimulace(float $rocne, float $urokPct, int $od, int $let): array
 }
 $prispevekCelkem = $navrh['ct'] + $navrh['cro'];
 $dluhSim = dluhSimulace($prispevekCelkem, $dluh['vynosNovych'], $prvniRok, 10);
+
+/* ------------------------------------------------------------------
+ *  Kompromisní scénáře: příspěvek v prvním roce, který by udržel reálnou
+ *  (inflací přepočtenou) úroveň výnosu z poplatků z vybraného roku. mil. Kč
+ * ------------------------------------------------------------------ */
+$scenarRealne = function (int $rok) use ($ct, $cro, $infAll, $prvniRok): array {
+    $i = cpi($infAll, $rok, $prvniRok);
+    return ['ct' => $ct[$rok][1] / 1000 * $i, 'cro' => $cro[$rok][1] / 1000 * $i, 'index' => $i];
+};
+$scenare = [
+    ['Vládní návrh (nominálně úroveň 2024)', $navrh['ct'], $navrh['cro']],
+    ['Úroveň 2024 reálně (dorovnaná inflace do ' . $prvniRok . ')', $scenarRealne(2024)['ct'], $scenarRealne(2024)['cro']],
+    ['Dnešní stav: plán poplatků 2026', $plan2026['ct_poplatky'], $plan2026['cro_poplatky']],
+    ['Střed mezi reálnou úrovní 2008 a 2024', ($scenarRealne(2008)['ct'] + $scenarRealne(2024)['ct']) / 2, ($scenarRealne(2008)['cro'] + $scenarRealne(2024)['cro']) / 2],
+    ['Úroveň 2016 reálně', $scenarRealne(2016)['ct'], $scenarRealne(2016)['cro']],
+    ['Úroveň 2008 reálně', $scenarRealne(2008)['ct'], $scenarRealne(2008)['cro']],
+];
+// Měsíční poplatek (TV + rozhlas) přepočtený inflací na ceny roku 2025
+$poplatekReal = fn(int $rok) => ($tvPoplatek['stary'] + $roPoplatek['stary']) * cpi($inflace, $rok, 2025);
